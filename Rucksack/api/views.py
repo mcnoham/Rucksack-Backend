@@ -57,6 +57,51 @@ def api_create_user(request, username):
         return Response({"message": "Email Already Exists"})
     return Response({"message": "User Already Exists"})
 
+@api_view(['POST', ])
+def delete_auth_token(request):
+    if request.user.is_authenticated:
+        try:
+            request.user.auth_token.delete()
+        except:
+            pass
+            
+        return Response("success", status=status.HTTP_202_ACCEPTED)
+    else:
+        return Response("login first !", status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['POST', ])
+def delete_user(request, user_id):
+    if request.user.is_authenticated:
+        try:
+            _user = User.objects.get(id = user_id)
+        except User.DoesNotExist:
+            return Response("User ID Does Not Exist")
+
+        if _user.id == request.user.id:
+            _user.delete()
+            return Response("User Has Been Deleted")
+        else:
+            return Response("Unauthorized")
+    
+    else:
+        return Response("Could Not Delete User")
+
+@api_view(['POST', ])
+def api_create_itinerary(request):
+    if request.user.is_authenticated:
+        # need user for itinerary
+        request.data["user"] = request.user.id
+        newItinerary = ItinerarySerializer(data = request.data)
+
+        if newItinerary.is_valid():
+            newItinerary.save()
+            return Response("success")
+
+        print(newItinerary.errors)
+        return Response("ERROR")
+    else:
+        return Response("please login")
+
 @api_view(['PUT', ])
 def edit_user(request, user_id):
     if request.user.is_authenticated:
@@ -70,17 +115,9 @@ def edit_user(request, user_id):
         # update django User model fields
         _user.username = request.data['user']['username']
         _user.save()
-
-
-
         return Response("Updated User")
     else:
         return Response("Could Not Edit User")
-
-# up to front end to prompt for 2 passwords
-# @api_view(['PUT', ])
-# def change_password(request, user_id):
-#     request.
 
 @api_view(['PUT', ])
 def update_email(request, username):
@@ -128,7 +165,6 @@ def update_password(request, username):
         return Response("Username and token don't match!")
     else:
         return Response(status = status.HTTP_401_UNAUTHORIZED)
-    
 
 @api_view(['GET', ])
 def api_get_user(request, username):
@@ -177,32 +213,47 @@ def MainPageView(request):
         return Response(context)
     except:
         return Response({"message": "There's nothing here !"})
-
-@api_view(['POST', ])
-def api_create_itinerary(request):
-    if request.user.is_authenticated:
-        # need user for itinerary
-        request.data["user"] = request.user.id
-        newItinerary = ItinerarySerializer(data = request.data)
-
-        if newItinerary.is_valid():
-            newItinerary.save()
-            return Response("success")
-
-        print(newItinerary.errors)
-        return Response("ERROR")
-    else:
-        return Response("please login")
     
+@api_view(['GET', ])
+def api_quick_search(request, keyword, ):
+    context = []
+    users = []
+    itineraries_title = []
+    it_loc = []
+
+    for u in User.objects.filter(username__contains= keyword):
+        users.append(UserSerializer(u).data)
+
+    for i in Itinerary.objects.filter(title__contains= keyword):
+        itineraries_title.append(ItinerarySerializer(i).data)
+    
+    for i in Itinerary.getItinerary(keyword):
+        it_loc.append(ItinerarySerializer(i).data)
+    
+    context.insert(0, users)
+    context.insert(1, itineraries_title)
+    context.insert(2, it_loc)
+
+
+    return Response(context)
 
 @api_view(['GET', ])
-def api_get_itinerary(request, location_tag):
-    try:
-        # query Itinerary based on location_tag
-        _itineraryList = Itinerary.objects.filter(location_tag=location_tag)
-    except Itinerary.DoesNotExist:
-        # if Itinerary doesn't exist, return following response
-        return Response({"message": "No Such Itineraries"})
+def api_get_itinerary(request):
+
+    _itineraryList = Itinerary.objects.all()
+    
+    # query Itinerary based on location_tag
+    if request.data['location'] is not None:
+        _itineraryList = _itineraryList.filter(location_tag=request.data['location'])
+    if request.data['budget'] is not None:
+        _itineraryList = _itineraryList.filter(budget=request.data['budget'])
+    if request.data['transportation'] is not None:
+        _itineraryList = _itineraryList.filter(transportation_tag=request.data['transportation'])
+    if request.data['accommodation'] is not None:
+        _itineraryList = _itineraryList.filter(accommodation_tag=request.data['accommodation'])
+    if request.data['duration'] is not None:
+        _itineraryList = _itineraryList.filter(duration_magnitude=request.data['duration'])
+
     # serialize JSON object if a user with the specified Itinerary exists
     result_list = []
     for itinerary in _itineraryList:
@@ -212,34 +263,5 @@ def api_get_itinerary(request, location_tag):
     # return 'Itinerary exists' if user exists
     return Response(result_list)
 
-
-@api_view(['POST', ])
-def delete_auth_token(request):
-    if request.user.is_authenticated:
-        try:
-            request.user.auth_token.delete()
-        except:
-            pass
-            
-        return Response("success", status=status.HTTP_202_ACCEPTED)
-    else:
-        return Response("login first !", status=status.HTTP_403_FORBIDDEN)
-
-@api_view(['POST', ])
-def delete_user(request, user_id):
-    if request.user.is_authenticated:
-        try:
-            _user = User.objects.get(id = user_id)
-        except User.DoesNotExist:
-            return Response("User ID Does Not Exist")
-
-        if _user.id == request.user.id:
-            _user.delete()
-            return Response("User Has Been Deleted")
-        else:
-            return Response("Unauthorized")
-    
-    else:
-        return Response("Could Not Delete User")
 
 

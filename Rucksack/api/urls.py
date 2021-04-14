@@ -13,6 +13,7 @@ from .views import (
     edit_user,
     update_email,
     update_password,
+    api_quick_search,
 )
 
 # Wire up our API using automatic URL routing.
@@ -22,7 +23,8 @@ urlpatterns = [
     path('get_user/<str:username>', api_get_user, name="get user"),
     path('<str:username>', ProfileView, name="Profile View"),
     path('home_view/', MainPageView, name="Main Page"),
-    path('get_itinerary/<str:location_tag>',api_get_itinerary),
+    path('get_itinerary/',api_get_itinerary),
+    path('quick_search/<keyword>', api_quick_search),
 
     #POST requests
     path('user_create/<str:username>', api_create_user, name="create user"), 

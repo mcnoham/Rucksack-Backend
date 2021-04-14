@@ -43,6 +43,15 @@ class Itinerary(models.Model):
         self.location_tag = self.location_tag.lower()
         return super(Itinerary, self).save( **kwargs)
 
+    def getItinerary(location):
+        context = []
+        _itineraryList = _itineraryList = Itinerary.objects.filter(location_tag=location)
+
+        for i in _itineraryList:
+            context.append(i)
+
+        return context
+
 
 # function is needed to create an authentication token for each user
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
