@@ -234,7 +234,6 @@ def api_quick_search(request, keyword, ):
     context.insert(1, itineraries_title)
     context.insert(2, it_loc)
 
-
     return Response(context)
 
 @api_view(['GET', ])
