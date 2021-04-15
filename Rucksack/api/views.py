@@ -259,6 +259,10 @@ def api_get_itinerary(request):
         serializer = ItinerarySerializer(itinerary)
         result_list.insert(0,serializer.data)
 
+
+    if result_list is None
+        return Response("no itineraries")
+
     # return 'Itinerary exists' if user exists
     return Response(result_list)
 
