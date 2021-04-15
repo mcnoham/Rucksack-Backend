@@ -238,7 +238,7 @@ def api_quick_search(request, keyword, ):
 
 @api_view(['GET', ])
 def api_get_itinerary(request):
-
+    
     _itineraryList = Itinerary.objects.all()
     
     # query Itinerary based on location_tag
