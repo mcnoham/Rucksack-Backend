@@ -236,7 +236,7 @@ def api_quick_search(request, keyword, ):
 
     return Response(context)
 
-@api_view(['GET', ])
+@api_view(['POST', ])
 def api_get_itinerary(request):
     
     _itineraryList = Itinerary.objects.all()
