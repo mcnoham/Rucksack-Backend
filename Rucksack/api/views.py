@@ -243,7 +243,7 @@ def api_get_itinerary(request):
     
     # query Itinerary based on location_tag
     if request.data['location'] is not None:
-        _itineraryList = _itineraryList.filter(location_tag=request.data['location'])
+        _itineraryList = _itineraryList.filter(location_tag__iexact=request.data['location'])
     if request.data['budget'] is not None:
         _itineraryList = _itineraryList.filter(budget=request.data['budget'])
     if request.data['transportation'] is not None:
