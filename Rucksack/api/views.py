@@ -221,10 +221,10 @@ def api_quick_search(request, keyword, ):
     itineraries_title = []
     it_loc = []
 
-    for u in User.objects.filter(username__contains= keyword):
+    for u in User.objects.filter(username__iontains= keyword):
         users.append(UserSerializer(u).data)
 
-    for i in Itinerary.objects.filter(title__contains= keyword):
+    for i in Itinerary.objects.filter(title__icontains= keyword):
         itineraries_title.append(ItinerarySerializer(i).data)
     
     for i in Itinerary.getItinerary(keyword):
