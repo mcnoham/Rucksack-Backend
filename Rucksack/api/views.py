@@ -221,10 +221,10 @@ def api_quick_search(request, keyword, ):
     itineraries_title = []
     it_loc = []
 
-    for u in User.objects.filter(username__contains= keyword):
+    for u in User.objects.filter(username__iontains= keyword):
         users.append(UserSerializer(u).data)
 
-    for i in Itinerary.objects.filter(title__contains= keyword):
+    for i in Itinerary.objects.filter(title__icontains= keyword):
         itineraries_title.append(ItinerarySerializer(i).data)
     
     for i in Itinerary.getItinerary(keyword):
@@ -243,7 +243,7 @@ def api_get_itinerary(request):
     
     # query Itinerary based on location_tag
     if request.data['location'] is not None:
-        _itineraryList = _itineraryList.filter(location_tag=request.data['location'])
+        _itineraryList = _itineraryList.filter(location_tag__iexact=request.data['location'])
     if request.data['budget'] is not None:
         _itineraryList = _itineraryList.filter(budget=request.data['budget'])
     if request.data['transportation'] is not None:
