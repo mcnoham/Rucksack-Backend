@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .serializers import UserSerializer, ProfileSerializer, ItinerarySerializer
 from .models import User, Profile, Itinerary
+from django.views import View
 from django.http import JsonResponse, Http404
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -101,6 +102,30 @@ def api_create_itinerary(request):
         return Response("ERROR")
     else:
         return Response("please login")
+
+@api_view(['POST', ])
+def filterView(request):
+    # main query
+    _itineraryList = Itinerary.objects.all()
+    
+    # query Itinerary based on location_tag
+    if request.data['location'] is not None:
+        _itineraryList = _itineraryList.filter(location_tag__icontains=request.data['location'])
+    if request.data['budget'] is not None:
+        _itineraryList = _itineraryList.filter(budget=request.data['budget'])
+    if request.data['transportation'] is not None:
+        _itineraryList = _itineraryList.filter(transportation_tag=request.data['transportation'])
+    if request.data['accommodation'] is not None:
+        _itineraryList = _itineraryList.filter(accommodation_tag=request.data['accommodation'])
+    if request.data['duration'] is not None:
+        _itineraryList = _itineraryList.filter(duration_magnitude=request.data['duration'])
+
+    result_list = []
+    for itinerary in _itineraryList:
+        serializer = ItinerarySerializer(itinerary)
+        result_list.insert(0,serializer.data)
+
+    return Response(result_list)
 
 @api_view(['PUT', ])
 def edit_user(request, user_id):
@@ -205,23 +230,16 @@ def ProfileView(request, username):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET', ])
-def MainPageView(request):
-    try:
-        context = []
-        for e in Itinerary.objects.all():
-            context.insert(0,ItinerarySerializer(e).data)
-        return Response(context)
-    except:
-        return Response({"message": "There's nothing here !"})
-    
-@api_view(['GET', ])
-def api_quick_search(request, keyword, ):
+def api_quick_search(request, keyword = ""):
     context = []
     users = []
     itineraries_title = []
     it_loc = []
 
-    for u in User.objects.filter(username__iontains= keyword):
+    if keyword is "":
+        return Response("none")
+
+    for u in User.objects.filter(username__icontains= keyword):
         users.append(UserSerializer(u).data)
 
     for i in Itinerary.objects.filter(title__icontains= keyword):
@@ -236,31 +254,6 @@ def api_quick_search(request, keyword, ):
 
     return Response(context)
 
-@api_view(['POST', ])
-def api_get_itinerary(request):
-    
-    _itineraryList = Itinerary.objects.all()
-    
-    # query Itinerary based on location_tag
-    if request.data['location'] is not None:
-        _itineraryList = _itineraryList.filter(location_tag__iexact=request.data['location'])
-    if request.data['budget'] is not None:
-        _itineraryList = _itineraryList.filter(budget=request.data['budget'])
-    if request.data['transportation'] is not None:
-        _itineraryList = _itineraryList.filter(transportation_tag=request.data['transportation'])
-    if request.data['accommodation'] is not None:
-        _itineraryList = _itineraryList.filter(accommodation_tag=request.data['accommodation'])
-    if request.data['duration'] is not None:
-        _itineraryList = _itineraryList.filter(duration_magnitude=request.data['duration'])
-
-    # serialize JSON object if a user with the specified Itinerary exists
-    result_list = []
-    for itinerary in _itineraryList:
-        serializer = ItinerarySerializer(itinerary)
-        result_list.insert(0,serializer.data)
-
-    # return 'Itinerary exists' if user exists
-    return Response(result_list)
 
 
 
