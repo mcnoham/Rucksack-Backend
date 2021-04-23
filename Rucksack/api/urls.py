@@ -10,7 +10,7 @@ from .views import (
     delete_auth_token,
     filterView,
     delete_user,
-    edit_user,
+    edit_profile,
     update_email,
     update_password,
     api_quick_search
@@ -32,9 +32,9 @@ urlpatterns = [
     path('login/',  obtain_auth_token, ), 
     path('create_itinerary/', api_create_itinerary, name="create itinerary"),
     path('delete_user/<user_id>',  delete_user, ),
-    path('edit_user/<user_id>',  edit_user, ),
 
     #PUT requests
     path('update_email/<username>',  update_email, ),
     path('update_password/<username>',  update_password, ),
+    path('edit_profile/<user_id>',  edit_profile, )
 ]

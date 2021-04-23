@@ -128,21 +128,20 @@ def filterView(request):
     return Response(result_list)
 
 @api_view(['PUT', ])
-def edit_user(request, user_id):
+def edit_profile(request, user_id):
     if request.user.is_authenticated:
         try:
             _profile = Profile.objects.filter(user_id = user_id)
-            _user = User.objects.get(id = user_id)
 
-        except User.DoesNotExist:
-            return Response("User ID Does Not Exist")
+        except Profile.DoesNotExist:
+            return Response("Account Does Not Exist")
         
         # update django User model fields
-        _user.username = request.data['user']['username']
-        _user.save()
-        return Response("Updated User")
+        _profile.description = request.data['description']
+        _profile.save()
+        return Response("Updated User Profile")
     else:
-        return Response("Could Not Edit User")
+        return Response("Could Not Edit User Profile")
 
 @api_view(['PUT', ])
 def update_email(request, username):
