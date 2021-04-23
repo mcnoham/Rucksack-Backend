@@ -6,7 +6,6 @@ from .views import (
     api_create_user,
     ProfileView,
     api_create_itinerary,
-    api_get_itinerary,
     delete_auth_token,
     filterView,
     delete_user,

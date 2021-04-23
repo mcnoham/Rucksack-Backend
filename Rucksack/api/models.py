@@ -32,6 +32,7 @@ class Itinerary(models.Model):
     description = models.TextField(max_length=500, default='')
     budget = models.IntegerField(default=0)
     duration_magnitude = models.IntegerField(default=0)
+    duration_unit = models.CharField(max_length=10, default='')
     location_tag = models.CharField(max_length=20, default='')
     transportation_tag = models.TextField(choices=TransportationTag.choices, default='')
     accommodation_tag = models.TextField(choices=AccommodationTag.choices, default='')
