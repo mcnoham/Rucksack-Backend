@@ -1,6 +1,7 @@
+from django.db.models import Avg
 from django.shortcuts import render, redirect
-from .serializers import UserSerializer, ProfileSerializer, ItinerarySerializer
-from .models import User, Profile, Itinerary
+from .serializers import UserSerializer, ProfileSerializer, ItinerarySerializer, RatingSerializer
+from .models import User, Profile, Itinerary, Rating
 from django.views import View
 from django.http import JsonResponse, Http404
 from django.core.exceptions import MultipleObjectsReturned
@@ -103,6 +104,29 @@ def api_create_itinerary(request):
     else:
         return Response("please login")
 
+@api_view(['PUT', ])
+def api_rate_itinerary(request):
+    if request.user.is_authenticated:
+        _user = request.user
+        _itinerary = request.itinerary
+        try:
+            _query = Rating.objects.filter(user = _user.id, itinerary = _itinerary.id)
+            _query.rating = request.data.rating
+            _query.save()
+        except Rating.DoesNotExist:
+            newRating = RatingSerializer(data = request.data)
+            if newRating.is_valid():
+                newRating.save()
+            else:
+                return Response("ERROR")
+        finally:
+            rated_itinerary = Itinerary.objects.get(id = _itinerary.id)
+            _query = Rating.objects.filter(itinerary = rated_itinerary.id)
+            rated_itinerary.number_of_ratings = _query.count()
+            rated_itinerary.itinerary_rating = _query.aggregate(Avg('rating'))
+            rated_itinerary.save()
+            return Response("Success!")
+            
 @api_view(['POST', ])
 def filterView(request):
     # main query
@@ -235,7 +259,7 @@ def api_quick_search(request, keyword = ""):
     itineraries_title = []
     it_loc = []
 
-    if keyword is "":
+    if keyword == "":
         return Response("none")
 
     for u in User.objects.filter(username__icontains= keyword):

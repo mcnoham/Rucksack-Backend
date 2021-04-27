@@ -6,6 +6,7 @@ from .views import (
     api_create_user,
     ProfileView,
     api_create_itinerary,
+    api_rate_itinerary,
     delete_auth_token,
     filterView,
     delete_user,
@@ -35,5 +36,6 @@ urlpatterns = [
     #PUT requests
     path('update_email/<username>',  update_email, ),
     path('update_password/<username>',  update_password, ),
-    path('edit_profile/<user_id>',  edit_profile, )
+    path('edit_profile/<user_id>',  edit_profile, ),
+    path('rate_itinerary/', api_rate_itinerary, )
 ]
