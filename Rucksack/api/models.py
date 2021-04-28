@@ -11,6 +11,14 @@ from rest_framework.authtoken.models import Token
 #     def str(self):
 #         return self.username
 
+
+# class User(User):
+#     email = models.CharField(max_length=100, default='')
+#
+#     def __str__(self):
+#         return self.username
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default=0)
     description = models.TextField(max_length=500, default='', blank=True)
