@@ -93,10 +93,12 @@ def api_create_itinerary(request):
     if request.user.is_authenticated:
         # need user for itinerary
         request.data["user"] = request.user.id
+        request.data["username"] = User.objects.get(id=request.user.id).username
         newItinerary = ItinerarySerializer(data = request.data)
 
         if newItinerary.is_valid():
             newItinerary.save()
+
             return Response("success")
 
         print(newItinerary.errors)

@@ -6,9 +6,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+# class User(User):
+
+#     def str(self):
+#         return self.username
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default=0)
-    description = models.TextField(max_length=500, default='')
+    description = models.TextField(max_length=500, default='', blank=True)
 
     def str(self):  # unicode for Python 2
         return self.user.username
@@ -27,7 +32,8 @@ class AccommodationTag(models.TextChoices):
     CAMP = 'Campsite'
 
 class Itinerary(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, blank=True)
+    username = models.CharField(max_length=100, default='', blank=True)
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=500, default='')
     budget = models.IntegerField(default=0)
