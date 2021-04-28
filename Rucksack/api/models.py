@@ -38,6 +38,7 @@ class Itinerary(models.Model):
     accommodation_tag = models.TextField(choices=AccommodationTag.choices, default='')
     itinerary_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
     number_of_ratings = models.IntegerField(default=0)
+    
 
     def str(self):
         return self.itinerary_title + self.user.username
@@ -48,17 +49,22 @@ class Itinerary(models.Model):
 
     def getItinerary(location):
         context = []
-        _itineraryList = Itinerary.objects.filter(location_tag=location)
+        _itineraryList = Itinerary.objects.filter(location_tag__icontains=location)
 
         for i in _itineraryList:
             context.append(i)
 
         return context
 
+    def updateRating(self,rating):
+        self.itinerary_rating = ((self.itinerary_rating * self.number_of_ratings) + rating)/(self.number_of_ratings + 1)
+        self.number_of_ratings = self.number_of_ratings + 1
+        self.save()
+
+
 class Rating (models.Model):
-     user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
-     itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE, default=0)
-     rating = models.DecimalField(max_digits=3, decimal_places=2)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE, default=0)
 
 # function is needed to create an authentication token for each user
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

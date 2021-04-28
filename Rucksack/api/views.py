@@ -107,25 +107,21 @@ def api_create_itinerary(request):
 @api_view(['PUT', ])
 def api_rate_itinerary(request):
     if request.user.is_authenticated:
-        _user = request.user
-        _itinerary = request.itinerary
+        _itinerary = Itinerary.objects.get(id=request.data['itinerary'])
+        # check if the user already rated the itinerary
+        rating = None
         try:
-            _query = Rating.objects.filter(user = _user.id, itinerary = _itinerary.id)
-            _query.rating = request.data.rating
-            _query.save()
+            rating = Rating.objects.get(itinerary=_itinerary.id, user=request.user.id)
         except Rating.DoesNotExist:
-            newRating = RatingSerializer(data = request.data)
-            if newRating.is_valid():
-                newRating.save()
-            else:
-                return Response("ERROR")
-        finally:
-            rated_itinerary = Itinerary.objects.get(id = _itinerary.id)
-            _query = Rating.objects.filter(itinerary = rated_itinerary.id)
-            rated_itinerary.number_of_ratings = _query.count()
-            rated_itinerary.itinerary_rating = _query.aggregate(Avg('rating'))
-            rated_itinerary.save()
-            return Response("Success!")
+            _itinerary.updateRating(request.data['rating'])
+            serial = RatingSerializer(data={'user':request.user.id, 'itinerary' : _itinerary.id})
+            if serial.is_valid():
+                serial.save()
+                return Response("rating updated")
+            return Response("rating failed to update")
+        return Response("user already rated itinerary")
+    else:
+        return Response("log in pls")
             
 @api_view(['POST', ])
 def filterView(request):

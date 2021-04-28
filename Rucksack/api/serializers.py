@@ -29,4 +29,4 @@ class ItinerarySerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
      class Meta:
          model = Rating
-         fields = ('user', 'itinerary', 'rating')
+         fields = ('user', 'itinerary')
