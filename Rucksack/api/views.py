@@ -187,27 +187,45 @@ def update_email(request, username):
     else:
         return Response(status = status.HTTP_401_UNAUTHORIZED)
 
+
 @api_view(['PUT', ])
 def update_password(request, username):
     try:
-        User.objects.get(username= username)
+        _user = User.objects.get(username= username)
     except User.DoesNotExist:
         return Response("User Doesn't exist")
 
-
     # user exists
-    _user = Token.objects.get(key = request.auth).user
+    # _user = Token.objects.get(key=request.auth).user
 
-    if username == _user.username:
-        if check_password(request.data['password'],_user.password):
-            return Response("new password can't be the same as old password")
-        else:
-            _user.set_password(request.data['password'])
-            _user.save()
-            return Response("password updated!")
+    if check_password(request.data['password'],_user.password):
+        return Response("new password can't be the same as old password")
+    else:
+        _user.set_password(request.data['password'])
+        _user.save()
+        return Response("password updated!")
 
 
-    return Response("Username and token don't match!")
+# @api_view(['PUT', ])
+# def update_password(request, username):
+#     try:
+#         User.objects.get(username= username)
+#     except User.DoesNotExist:
+#         return Response("User Doesn't exist")
+#
+#     # user exists
+#     _user = Token.objects.get(key=request.auth).user
+#
+#     if username == _user.username:
+#         if check_password(request.data['password'],_user.password):
+#             return Response("new password can't be the same as old password")
+#         else:
+#             _user.set_password(request.data['password'])
+#             _user.save()
+#             return Response("password updated!")
+#
+#
+#     return Response("Username and token don't match!")
 
 @api_view(['GET', ])
 def api_get_user(request, username):
