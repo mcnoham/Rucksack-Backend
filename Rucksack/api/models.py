@@ -40,9 +40,9 @@ class AccommodationTag(models.TextChoices):
     CAMP = 'Campsite'
 
 class DurationUnit(models.TextChoices):
-    DAY = "Day"
-    WEEK = "Week"
-    MONTH = "Month"
+    DAY = "Day(s)"
+    WEEK = "Week(s)"
+    MONTH = "Month(s)"
 
 class Itinerary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, blank=True)
