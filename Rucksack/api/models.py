@@ -39,6 +39,11 @@ class AccommodationTag(models.TextChoices):
     CONDO = 'Condo'
     CAMP = 'Campsite'
 
+class DurationUnit(models.TextChoices):
+    DAY = "Day"
+    WEEK = "Week"
+    MONTH = "Month"
+
 class Itinerary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, blank=True)
     username = models.CharField(max_length=100, default='', blank=True)
@@ -46,7 +51,7 @@ class Itinerary(models.Model):
     description = models.TextField(max_length=500, default='')
     budget = models.IntegerField(default=0)
     duration_magnitude = models.IntegerField(default=0)
-    duration_unit = models.CharField(max_length=10, default='')
+    duration_unit = models.TextField(choices=DurationUnit.choices, default='')
     location_tag = models.CharField(max_length=20, default='')
     transportation_tag = models.TextField(choices=TransportationTag.choices, default='')
     accommodation_tag = models.TextField(choices=AccommodationTag.choices, default='')
