@@ -22,6 +22,7 @@ from rest_framework.authtoken.models import Token
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default=0)
     description = models.TextField(max_length=500, default='', blank=True)
+    profile_picture = models.ImageField(upload_to='upload/', blank=True, null=True)
 
     def str(self):  # unicode for Python 2
         return self.user.username
@@ -48,6 +49,7 @@ class Itinerary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, blank=True)
     username = models.CharField(max_length=100, default='', blank=True)
     title = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='upload/', blank=True, null=True)
     description = models.TextField(max_length=500, default='')
     budget = models.IntegerField(default=0)
     duration_magnitude = models.IntegerField(default=0)
