@@ -153,6 +153,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# SMTP Configuration - Email Verification
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'travel.with.rucksack@gmail.com'
+EMAIL_HOST_PASSWORD = 'rucksack1234'
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), ) 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/' 

@@ -13,7 +13,8 @@ from .views import (
     edit_profile,
     update_email,
     update_password,
-    api_quick_search
+    api_quick_search,
+    api_email_verification,
 )
 
 # Wire up our API using automatic URL routing.
@@ -24,6 +25,7 @@ urlpatterns = [
     path('<str:username>', ProfileView, name="Profile View"),
     path('quick_search/', api_quick_search),
     path('quick_search/<keyword>', api_quick_search),
+    path('email_verification/<email>', api_email_verification),
 
     #POST requests
     path('filter_view/', filterView, ),

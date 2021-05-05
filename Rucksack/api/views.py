@@ -7,6 +7,9 @@ from django.http import JsonResponse, Http404
 from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.hashers import make_password, check_password
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -289,6 +292,28 @@ def api_quick_search(request, keyword = ""):
     context.insert(2, it_loc)
 
     return Response(context)
+
+
+@api_view(['GET', ])
+def api_email_verification(request, email):
+    try:
+        _user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"message": "user doesn't exist!"})
+
+    email_form = EmailMessage(
+        'Rucksack: Here is the verification code.',
+        'Your code is: 1234',
+        settings.EMAIL_HOST_USER,
+        [email],
+    )
+
+    email_form.fail_silently = False
+    email_form.send()
+
+    return Response({"message": "Email is successfully sent!"})
+
+
 
 
 
