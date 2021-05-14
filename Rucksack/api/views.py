@@ -1,7 +1,7 @@
 from django.db.models import Avg
 from django.shortcuts import render, redirect
 from .serializers import UserSerializer, ProfileSerializer, ItinerarySerializer, RatingSerializer
-from .models import User, Profile, Itinerary, Rating
+from .models import User, Profile, Itinerary, Rating, resetToken
 from django.views import View
 from django.http import JsonResponse, Http404
 from django.core.exceptions import MultipleObjectsReturned
@@ -195,11 +195,16 @@ def update_email(request, username):
 def update_password(request, username):
     try:
         _user = User.objects.get(username= username)
+        token = resetToken.objects.get(myUser=_user)
     except User.DoesNotExist:
         return Response("User Doesn't exist")
+    except resetToken.DoesNotExist:
+        return Response("user doesn't have a resetToken")
 
     # user exists
     # _user = Token.objects.get(key=request.auth).user
+
+    token.delete()
 
     if check_password(request.data['password'],_user.password):
         return Response("new password can't be the same as old password")
@@ -298,20 +303,30 @@ def api_quick_search(request, keyword = ""):
 def api_email_verification(request, email):
     try:
         _user = User.objects.get(email=email)
+        token = resetToken.objects.get(myUser=_user)
+        token.delete()
     except User.DoesNotExist:
         return Response({"message": "user doesn't exist!"})
+    except resetToken.DoesNotExist:
+        pass
+    finally:
+        token = resetToken.objects.create(myUser=_user)
 
-    email_form = EmailMessage(
-        'Rucksack: Here is the verification code.',
-        'Your code is: 1234',
-        settings.EMAIL_HOST_USER,
-        [email],
-    )
+        print(token.resetToken)
 
-    email_form.fail_silently = False
-    email_form.send()
+        # send email with redirect link
+        email_form = EmailMessage(
+            'Rucksack: Here is the verification code.',
+            'click this link to update your password: ****redirect link goes here****',
+            settings.EMAIL_HOST_USER,
+            [email],
+        )
 
-    return Response({"message": "Email is successfully sent!"})
+        email_form.fail_silently = False
+        email_form.send()
+    
+
+        return Response({"message": "Email is successfully sent!"})
 
 
 

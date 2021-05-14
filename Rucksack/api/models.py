@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import tree
 from rest_framework.authtoken.models import Token
-
+from rest_framework.authtoken.views import ObtainAuthToken
+import uuid
 # class User(User):
 
 #     def str(self):
@@ -18,7 +20,6 @@ from rest_framework.authtoken.models import Token
 #     def __str__(self):
 #         return self.username
 
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default=0)
     description = models.TextField(max_length=500, default='', blank=True)
@@ -26,6 +27,13 @@ class Profile(models.Model):
 
     def str(self):  # unicode for Python 2
         return self.user.username
+
+class resetToken(models.Model):
+    myUser = models.OneToOneField(User, on_delete=models.CASCADE,default=0, primary_key=True, blank=False)
+    resetToken = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    # def create(self, myUser):
+
 
 class TransportationTag(models.TextChoices):
     CAR = 'Car'

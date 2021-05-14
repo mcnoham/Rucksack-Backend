@@ -26,6 +26,7 @@ urlpatterns = [
     path('quick_search/', api_quick_search),
     path('quick_search/<keyword>', api_quick_search),
     path('email_verification/<email>', api_email_verification),
+    
 
     #POST requests
     path('filter_view/', filterView, ),
