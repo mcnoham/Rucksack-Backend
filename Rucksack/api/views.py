@@ -314,10 +314,11 @@ def api_email_verification(request, email):
 
         print(token.resetToken)
 
+        url = 'http://localhost:8000/api/update_password'+_user.username
         # send email with redirect link
         email_form = EmailMessage(
-            'Rucksack: Here is the verification code.',
-            'click this link to update your password: ****redirect link goes here****',
+            'Rucksack: Here is the verification link.',
+            'click this link to update your password: '+url,
             settings.EMAIL_HOST_USER,
             [email],
         )
